@@ -1,0 +1,53 @@
+Claude
+
+Customer tries to transfer rupees fifty thousand. Transaction failed. Errors shown is transaction could not be completed. Okay. So for this, what are the discoveries? Let's do it in a Mastering chain of thoughts. First point, let's think step by step. Show your working. Explain your reasoning before answering.
+
+Let me work through this like a support/ops analyst would — starting from what's observable and narrowing down to root cause.
+
+## Step 1: Clarify the exact failure signature
+"Transaction could not be completed" is a generic, catch-all message — it doesn't point to a layer yet. Before anything else, gather:
+- Exact error code (if any) shown alongside the message
+- Channel used: mobile app, net banking, UPI, IMPS, NEFT, RTGS
+- Timestamp of the attempt
+- Screenshot or exact wording, since banks often reuse this string for very different underlying faults
+
+**Reasoning:** Different rails (UPI/IMPS/NEFT/RTGS) have different failure points, so identifying the rail narrows the search space immediately.
+
+## Step 2: Check account-side status
+- Was the amount **debited** from the sender's account or not? (Check statement/passbook, not just the app message)
+- Is there a **hold** or **lien** on the account?
+- Sufficient balance considering ₹50,000 + any transfer charges?
+- Daily/per-transaction limit — many accounts cap UPI at ₹1 lakh/day but some apps cap single transactions lower (₹25k–₹50k for certain UPI apps)
+
+**Reasoning:** This is the most common "discovery" — a debit with no credit (stuck in transit) is a completely different problem than a transaction that never left the sender's account.
+
+## Step 3: Check beneficiary-side validity
+- Is the beneficiary account active, correctly added, and IFSC/UPI ID valid?
+- Recently added payee — some banks enforce a cooling period (24 hrs) with a lower transfer limit during that window
+- Beneficiary bank undergoing maintenance/downtime at that time
+
+## Step 4: Check network/gateway/timing factors
+- Was this during a bank maintenance window (many Indian banks do nightly batch NEFT/RTGS windows)?
+- Server timeout on the payment gateway (common cause of generic failure messages)
+- Third-party UPI app issue vs. actual bank server issue (NPCI-side vs. bank-side)
+
+## Step 5: Reconcile amount debited vs credited
+- If debited but not credited: this typically **auto-reverses within T+1 working day** — check if that reversal happened
+- If reversal hasn't happened past SLA: this becomes a formal complaint case
+
+## Step 6: Cross-check with bank statement + reference/UTR number
+- Every attempted transaction (success or fail) generates a UTR/RRN — pulling this lets the bank's backend team trace exactly where in the pipeline it stalled
+
+---
+
+### Summary of "Discoveries" to document for this case:
+| # | Discovery Point | Why it matters |
+|---|---|---|
+| 1 | Channel/rail used (UPI/IMPS/NEFT/RTGS) | Determines which system to trace |
+| 2 | Debit status (debited or not) | Determines if it's a stuck-in-transit case |
+| 3 | Account limits/lien | Determines if it's a self-inflicted block |
+| 4 | Beneficiary validity | Determines if issue is receiver-side |
+| 5 | Time of failure vs bank maintenance window | Determines if it's a timing/system issue |
+| 6 | UTR/reference number | Needed for any escalation |
+
+Do you want me to turn this into a formal complaint/escalation template (for the customer to submit to the bank), or is this for internal support documentation?

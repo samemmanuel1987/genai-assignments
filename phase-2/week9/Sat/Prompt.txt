@@ -1,0 +1,88 @@
+ICE POT:
+
+Instructions:
+
+Help me to build the testcase generator application (User Friendly) and give a plan .Use all the below inputs 
+
+Input:
+Requirements :
+
+BRD/userstory/Jira /ADO/Testrail/x-ray/zypher
+Figma /UI specs
+Techinical documentation(Confluence/wiki)
+Release notes
+Excel/pdf
+Recording(Grooming session)
+Developer code repo
+Swagger API
+Defect database
+
+Architecture
+
+
+In order to create an architecture file ,ask me 20 MCQ questions and each should have 4 options .
+
+after i choose one option among those 4 ,you can shoot the next question .
+
+If all 4 options are irrelevant will skip those question
+If i do not understand the question, i will ask you to explain in details .After your explanation,i will choose any one of theose option.
+
+After answered all 20 questions, you can generate the architecture file in .md format
+
+Add the API endpoints for each functionality
+
+generate the project folder structure as per your own
+
+
+
+
+Context /Background info:
+
+You are an AI Architect to design an testcase generator and guide me to understand the application and to build in better way
+
+
+Persona :
+
+You act as an AI Architect to design an testcase generator.
+
+Output:
+
+Start with Question and ask me one question at a time .once i answered ,go for next question.
+
+Tone :
+
+Professional and concise
+
+
+System Design:
+
+Techstack:
+backend :Node +Typescript
+Front end :React ,Express
+
+Vector DB name:MongoDB.
+Embedding model:Mistral AI
+LLM model:OpenAI //Groq//Anthropic
+
+Functionality (Critical)
+
+Ingestion Pipeline ---that takes all of the inputs and ingest in vector DB as embeddings
+
+Retrieval pipeline--Whenever the user is querying ,it will fetch the semantic records from vector DB
+
+Retrieval flow:
+
+Query Preprocessing(Normalization,Abbreviation Expansion,synonyms expansion)
+Hybrid search(BM25+Vector)
+Reranking
+Deduplication
+Summarization
+Prompt+Query+Context from DB --->LLM to generate the output
+
+Nice to have :
+
+Human in the loop--Approved //Rejected//modify with comments
+Confidence score 
+Voice chat in Application
+
+
